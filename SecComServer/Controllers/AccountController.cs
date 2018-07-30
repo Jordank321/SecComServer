@@ -1,7 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -24,7 +22,6 @@ namespace SecComServer.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -33,19 +30,31 @@ namespace SecComServer.Controllers
         }
 
         [HttpPost] 
-        public async Task<IActionResult> Register([FromBody]Registration registration) 
+        public async Task<IActionResult> Register([FromBody]AccountChallenge challenge) 
         { 
-            var user = new ApplicationUser { UserName = registration.Username }; 
-            var result = await _userManager.CreateAsync(user, registration.Password);
+            var user = new ApplicationUser { UserName = challenge.Username }; 
+            var result = await _userManager.CreateAsync(user, challenge.Password);
 
             if (!result.Succeeded) return BadRequest();
 
             await _signInManager.SignInAsync(user, true); 
             return Ok();
         }
+
+        [HttpPost] 
+        [AllowAnonymous]
+        public async Task<IActionResult> Login([FromBody]AccountChallenge challenge) 
+        { 
+            var user = await _userManager.FindByNameOrEmailAsync(challenge.Username, challenge.Password);
+
+            if (user == null) return BadRequest();
+
+            var result = await _signInManager.PasswordSignInAsync(user, challenge.Password, true, true);
+            return result.Succeeded ? (IActionResult)Ok() : Forbid();
+        }
     }
 
-    public class Registration
+    public class AccountChallenge
     {
         public string Username { get; set; }
         public string Password { get; set; }
