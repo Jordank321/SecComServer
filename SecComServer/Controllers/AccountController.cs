@@ -45,7 +45,7 @@ namespace SecComServer.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody]AccountChallenge challenge) 
         { 
-            var user = await _userManager.FindByNameOrEmailAsync(challenge.Username, challenge.Password);
+            var user = await _userManager.FindByNameOrEmailAsync(challenge.Username);
 
             if (user == null) return BadRequest();
 

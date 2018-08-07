@@ -11,9 +11,10 @@ using System;
 namespace SecComServer.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180802221215_Convos")]
+    partial class Convos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -201,28 +202,6 @@ namespace SecComServer.Data.Migrations
                     b.ToTable("Conversations");
                 });
 
-            modelBuilder.Entity("SecComServer.Data.EncryptedMessage", b =>
-                {
-                    b.Property<long>("EncryptedMessageId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Content");
-
-                    b.Property<int?>("ConversationId");
-
-                    b.Property<string>("FirstUser");
-
-                    b.Property<string>("SecondUser");
-
-                    b.Property<DateTime>("Sent");
-
-                    b.HasKey("EncryptedMessageId");
-
-                    b.HasIndex("ConversationId");
-
-                    b.ToTable("EncryptedMessages");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
@@ -277,13 +256,6 @@ namespace SecComServer.Data.Migrations
                     b.HasOne("SecComServer.Data.ApplicationUser", "SecondUser")
                         .WithMany()
                         .HasForeignKey("SecondUserId");
-                });
-
-            modelBuilder.Entity("SecComServer.Data.EncryptedMessage", b =>
-                {
-                    b.HasOne("SecComServer.Data.Conversation", "Conversation")
-                        .WithMany()
-                        .HasForeignKey("ConversationId");
                 });
 #pragma warning restore 612, 618
         }
